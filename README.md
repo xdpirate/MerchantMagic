@@ -30,13 +30,13 @@ Use **/mm \<command\>** (or /merchantmagic \<command\>) to access the addon in-g
 
 ## Valid commands
 ### Addon settings
-**toggle**
+#### toggle
 
 Turn MerchantMagic on/off
 
 Example: ```/mm toggle``` - Turns the addon off if it's on, or on if it's off
 
-**verbose** 
+#### verbose
 
 Turn verbose mode on/off. Verbose mode will print more information about what the addon is doing
 
