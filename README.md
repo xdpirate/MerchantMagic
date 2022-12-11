@@ -10,8 +10,9 @@ You install this like any other addon, by dropping the addon folder ("MerchantMa
 The addon operates in the following way: Whenever you visit a merchant (vendor), MerchantMagic scans your bags and checks each and every item against your rulesets. If an item is found to match every single rule in a ruleset, it is sold, and processing moves on to the next item in your bags. If an item has no sell value, it is ignored.
 
 # Terminology
-* **Ruleset** - A ruleset is a set of rules. Every rule in a ruleset must be matched in order for an item to be matched against the whole set (boolean AND). Rules within a ruleset are separated by semi-colons. Example:
+* **Ruleset** - A ruleset is a set of rules. Every rule in a ruleset must be matched in order for an item to be matched against the whole set (boolean AND). Rules within a ruleset are separated by semi-colons ```;```. Example:
   * ```type=consumable;subtype=scroll```  - A ruleset matching all scrolls
+  * ```type=consumable;subtype=food & drink;level<85```  - A ruleset matching all food and drink that has a required level less than 85
 * **Rule** - A rule is what the name implies, a rule that has to be matched by the item being checked. A rule has two parts, the parameter and the argument, separated by an equals sign ```=```. Optionally, the parameter can be a comma-separated list of all acceptable values (boolean OR). Examples:
 	* ```type=armor``` - A rule matching pieces of armor
 	* ```type=armor,weapon``` - A rule matching pieces of armor or weapons
