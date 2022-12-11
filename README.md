@@ -71,6 +71,11 @@ Remove ruleset \<ruleID\>
 
 Example: ```/mm remove 5``` - Removes ruleset number 5.
 
+#### list
+Lists all your rulesets along with their active status.
+
+Example: ```/mm list``` - Lists all your rulesets and whether they're active.
+
 #### edit \<rulesetID\> \<newRuleset\>
 Edit ruleset \<ruleID\>, replacing it with \<newRuleset\>
 
