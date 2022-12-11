@@ -31,92 +31,110 @@ Use **/mm \<command\>** (or /merchantmagic \<command\>) to access the addon in-g
 ## Valid commands
 ### Addon settings
 **toggle**
+
 Turn MerchantMagic on/off
 
 Example: ```/mm toggle``` - Turns the addon off if it's on, or on if it's off
 
 **verbose** 
+
 Turn verbose mode on/off. Verbose mode will print more information about what the addon is doing
 
 Example: ```/mm verbose``` - Turns verbose mode off if it's on, or on if it's off
 
 **max12** 
+
 Turn Max12 mode on/off. Max12 mode limits the number of items sold to a vendor to 12 on each visit. Use this if you are unsure that you've written your rulesets correctly, as with this enabled, you will able to buy back any items sold by mistake.
 
 Example: ```/mm max12``` - Turns Max12 mode off if it's on, or on if it's off
 
 **tooltip**
+
 Turn MM tooltip info on/off. This option will show a line of text in item tooltips if the item matches any of your rulesets, or if they are in your whitelist. Non-matching items will not have any information added to their tooltip.
 
 Example: ```/mm tooltip``` - Turns the MM tooltip off if it's on, or on if it's off
 
 **tooltip verbose**
+
 Toggle showing ruleset content in item tooltip info. This will add an additional line of text to the tooltip of matching items, and will show the full ruleset that it matched.
 
 Example: ```/mm tooltip verbose``` - Turns the MM tooltip verbose mode off if it's on, or on if it's off
 
 **tooltip info**
+
 Toggle showing item info in MM tooltip. This will show information about each and every item you hover over, in the form of MerchantMagic rules. Use this to quickly find an item's type, sale value, etc. This is the same information supplied if you use the ```/mm info [item link]``` command manually.
 
 Example: ```/mm tooltip info``` - Turns the MM tooltip item info off if it's on, or on if it's off
 
 ### Ruleset commands
 **add \<ruleset\>**
+
 Add a new ruleset
 
 Example: ```/mm add type=armor;ilvl<300``` - Adds a new ruleset with rules matching armor that has an item level less than 300
 
 **remove \<rulesetID\>**
+
 Remove ruleset \<ruleID\>
 
 Example: ```/mm remove 5``` - Removes ruleset number 5.
 
 **edit \<rulesetID\> \<newRuleset\>**
+
 Edit ruleset \<ruleID\>, replacing it with \<newRuleset\>
 
 Example: ```/mm edit 3 type=weapon;rarity=1``` - Replaces ruleset number 3 with a new ruleset that matches weapons of white/common rarity.
 
 **enable \<rulesetID\>**
+
 Enable ruleset \<rulesetID\>
 
 Example: ```/mm enable 7``` - Enables ruleset number 7.
 
 **disable \<rulesetID\>**
+
 Disable ruleset \<rulesetID\>
 
 Example: ```/mm disable 9``` - Disables ruleset number 9.
 
 **move \<fromID\> \<toID\>**
+
 Move ruleset from \<fromID> to \<toID>, pushing \<toID\> and subsequent rules down one level.
 
 Example: ```/mm move 10 3``` - Moves ruleset number 10 to number 3, pushing the ruleset that previously had number 3 down to number 4, then 4 to 5, and so on.
 
 **swap \<fromID\> \<toID\>**
+
 Swap \<fromID\> \<toID\> ruleset positions
 
 Example: ```/mm swap 7 9``` - Swaps the positions of rulesets number 7 and 9.
 
 **test \<itemLink\>**
+
 Test \<itemLink\> against current rulesets
 
 Example: ```/mm test [Windwool Cloth]``` - Runs the item link [Windwool Cloth] through your rulesets to see if it matches any of them, and outputs the information to your chat frame.
 
 **testbags**
+
 Test contents of bags against current rulesets (dry run)
 
 Example: ```/mm testbags``` - Tests all the items in your bags against your active rulesets and pretends to sell them. This is essentially a dry run of actually visiting a vendor, and will show you all the same information, without actually vendoring any items.
 
 **info \<itemLink\>**
+
 Show relevant info about \<itemLink\>
 
 Example: ```/mm info [Roasted Barley Tea]``` - Prints out all info relevant to MerchantMagic about the item link [Roasted Barley Tea]. This is the same info that is shown in the tooltip if you enable tooltip item info mode.
 
 **clear**
+
 Clear all rulesets
 
 Example: ```/mm clear``` - Attempts to delete all your rulesets. MerchantMagic will ask you to issue the same command again in order to confirm, as this cannot be undone.
 
 **rulesethelp**
+
 Show in-game help on how to write a ruleset
 
 Example: ```/mm rulesethelp``` - Prints out information on how to write a ruleset to your chat frame
@@ -126,26 +144,31 @@ Whitelisted items will never be vendored.
 *Note that the whitelist does not take rulesets as arguments, only item names!*
 
 **whitelist**
+
 Show whitelist commands
 
 Example: ```/mm whitelist``` - Prints out information on how to use the whitelist to your chat frame
 
 **whitelist add \<item name or link\>**
+
 Add an item to the whitelist. You can supply just the name of an item, or an item link that the name will be extracted out of. 
 
 Example: ```/mm whitelist add sharpened tuskarr spear``` - Adds the item [Sharpened Tuskarr Spear] to your whitelist. 
 
 **whitelist remove \<item name or link\>**
+
 Remove specified item from whitelist
 
 Example: ```/mm whitelist remove sharpened tuskarr spear``` - Removes the item [Sharpened Tuskarr Spear] from your whitelist. 
 
 **whitelist list**
+
 List all items currently in the whitelist
 
 Example: ```/mm whitelist list``` - Prints the contents of your whitelist to the chat frame
 
 **whitelist clear**
+
 Clear the whitelist of all item names
 
 Example: ```/mm whitelist clear``` - Empties your whitelist of all items. MerchantMagic will ask for confirmation before doing this, as it cannot be undone.
