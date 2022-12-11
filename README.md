@@ -31,37 +31,31 @@ Use **/mm \<command\>** (or /merchantmagic \<command\>) to access the addon in-g
 ## Valid commands
 ### Addon settings
 #### toggle
-
 Turn MerchantMagic on/off
 
 Example: ```/mm toggle``` - Turns the addon off if it's on, or on if it's off
 
 #### verbose
-
 Turn verbose mode on/off. Verbose mode will print more information about what the addon is doing
 
 Example: ```/mm verbose``` - Turns verbose mode off if it's on, or on if it's off
 
-**max12** 
-
+#### max12
 Turn Max12 mode on/off. Max12 mode limits the number of items sold to a vendor to 12 on each visit. Use this if you are unsure that you've written your rulesets correctly, as with this enabled, you will able to buy back any items sold by mistake.
 
 Example: ```/mm max12``` - Turns Max12 mode off if it's on, or on if it's off
 
-**tooltip**
-
+#### tooltip
 Turn MM tooltip info on/off. This option will show a line of text in item tooltips if the item matches any of your rulesets, or if they are in your whitelist. Non-matching items will not have any information added to their tooltip.
 
 Example: ```/mm tooltip``` - Turns the MM tooltip off if it's on, or on if it's off
 
-**tooltip verbose**
-
+#### tooltip verbose
 Toggle showing ruleset content in item tooltip info. This will add an additional line of text to the tooltip of matching items, and will show the full ruleset that it matched.
 
 Example: ```/mm tooltip verbose``` - Turns the MM tooltip verbose mode off if it's on, or on if it's off
 
-**tooltip info**
-
+#### tooltip info
 Toggle showing item info in MM tooltip. This will show information about each and every item you hover over, in the form of MerchantMagic rules. Use this to quickly find an item's type, sale value, etc. This is the same information supplied if you use the ```/mm info [item link]``` command manually.
 
 Example: ```/mm tooltip info``` - Turns the MM tooltip item info off if it's on, or on if it's off
