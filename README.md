@@ -153,6 +153,7 @@ Example: ```/mm whitelist clear``` - Empties your whitelist of all items. Mercha
 # Table of accepted parameters, operators and arguments
 Remember that you can easily find the arguments you need to match an item by doing ```/mm info [item link]```, or enabling tooltip info mode with ```/mm tooltip info```.
 
+
 | Parameter | Accepted operators | Accepted arguments |
 | ---- | ---- | ---- | ---- |
 | name | = | Absolute name of an item, e.g. "hozen cuervo"|
