@@ -155,7 +155,7 @@ Remember that you can easily find the arguments you need to match an item by doi
 
 
 | Parameter | Accepted operators | Accepted arguments |
-| ---- | ---- | ---- | ---- |
+| ------------- | ------------- | ------------- | ------------- |
 | name | = | Absolute name of an item, e.g. "hozen cuervo"|
 | rarity | < > = | A number from 0 to 4, indicating item rarity/quality:<br />0 = Poor/Gray<br />1 = Common/White<br />2 = Uncommon/Green<br />3 = Rare/Blue<br />4 = Epic/Purple|
 | type | = | One of the following types: "armor", "consumable", "container", "gem", "key", "miscellaneous", "money", "reagent", "recipe", "projectile", "quest", "quiver", "trade goods", "weapon" |
