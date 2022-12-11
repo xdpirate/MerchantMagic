@@ -164,3 +164,4 @@ Remember that you can easily find the arguments you need to match an item by doi
 | level | < > = | A number representing the required level for an item, e.g. ```level=85```, matching items with required level exactly 85. |
 | sellprice | < > = | A number representing the sale price for an item, expressed in copper, e.g. ```sellprice>100000```, matching items that has a sell price greater than 10 gold. |
 | bindtype | = | |
+
