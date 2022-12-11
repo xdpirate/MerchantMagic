@@ -1,0 +1,10 @@
+## Interface: 50400
+## Title-enGB: MerchantMagic
+## Author: xdpirate
+## Version: 1.3
+## Notes: Lets you define rules for items to always sell to merchants
+## DefaultState: Enabled
+## LoadOnDemand: 0
+##SavedVariablesPerCharacter: MMSettings, MMRules, MMWhitelist
+MerchantMagic.lua
+MerchantMagic.xml
