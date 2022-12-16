@@ -575,29 +575,33 @@ function DoTheMagic(testing)
             local link = GetContainerItemLink(bag, slot)
             
             if link then
-                local itemName = strlower(select(1, GetItemInfo(link)))
-                local sellprice = select(11, GetItemInfo(link))
+                local itemName = select(1, GetItemInfo(link))
+                if itemName then
+                    itemName = strlower(itemName)
+                    
+                    local sellprice = select(11, GetItemInfo(link))
                                 
-                local _, itemCount = GetContainerItemInfo(bag, slot)
-                local slotValue = sellprice * itemCount
-                
-                if has_value(MMWhitelist, itemName) == false then -- Not in whitelist
-                    local success, rulesetIndex = TestItemAgainstRulesets(link, false)
-                    if success then -- Item matched a ruleset
-                        if sellprice == 0 and MMSettings.verbose then
-                            MMPrint(link .. " has no sell price and was ignored.")
-                        else
-                            if testing == false then
-                                ShowMerchantSellCursor(1)
-                                UseContainerItem(bag, slot)
-                            end
+                    local _, itemCount = GetContainerItemInfo(bag, slot)
+                    local slotValue = sellprice * itemCount
+                    
+                    if has_value(MMWhitelist, itemName) == false then -- Not in whitelist
+                        local success, rulesetIndex = TestItemAgainstRulesets(link, false)
+                        if success then -- Item matched a ruleset
+                            if sellprice == 0 and MMSettings.verbose then
+                                MMPrint(link .. " has no sell price and was ignored.")
+                            else
+                                if testing == false then
+                                    ShowMerchantSellCursor(1)
+                                    UseContainerItem(bag, slot)
+                                end
+                                
+                                soldSlots = soldSlots + 1
+                                soldItems = soldItems + itemCount
+                                soldValue = soldValue + slotValue
                             
-                            soldSlots = soldSlots + 1
-                            soldItems = soldItems + itemCount
-                            soldValue = soldValue + slotValue
-                        
-                            if MMSettings.verbose then
-                                MMPrint("Sold: " .. itemCount .. "x ".. link .. " (RS#" .. rulesetIndex .. ")")
+                                if MMSettings.verbose then
+                                    MMPrint("Sold: " .. itemCount .. "x ".. link .. " (RS#" .. rulesetIndex .. ")")
+                                end
                             end
                         end
                     end
@@ -654,7 +658,7 @@ function TestItemAgainstRulesets(link, testing)
                 do
                     local currentParameter = parameters[param]
                     if argument == "name" then
-                        if currentParameter == strlower(itemName) then
+                        if itemName and currentParameter == strlower(itemName) then
                             if testing then
                                 MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                             end
@@ -666,7 +670,7 @@ function TestItemAgainstRulesets(link, testing)
                         local rarityInteger = tonumber(currentParameter)
                         
                         if operator == "=" then
-                            if itemQuality == rarityInteger then
+                            if itemQuality and itemQuality == rarityInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -675,7 +679,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == "<" then
-                            if itemQuality < rarityInteger then
+                            if itemQuality and itemQuality < rarityInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -684,7 +688,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == ">" then
-                            if itemQuality > rarityInteger then
+                            if itemQuality and itemQuality > rarityInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -694,7 +698,7 @@ function TestItemAgainstRulesets(link, testing)
                             end
                         end    
                     elseif argument == "type" then
-                        if currentParameter == strlower(itemType) then
+                        if itemType and currentParameter == strlower(itemType) then
                             if testing then
                                 MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                             end
@@ -721,7 +725,7 @@ function TestItemAgainstRulesets(link, testing)
                                     break
                                 end
                             end
-                        elseif currentParameter == strlower(itemSubType) then
+                        elseif itemSubType and currentParameter == strlower(itemSubType) then
                             if testing then
                                 MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                             end
@@ -733,7 +737,7 @@ function TestItemAgainstRulesets(link, testing)
                         local ilvlInteger = tonumber(currentParameter)
                         
                         if operator == "=" then
-                            if itemLevel == ilvlInteger then
+                            if itemLevel and itemLevel == ilvlInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -742,7 +746,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == "<" then
-                            if itemLevel < ilvlInteger then
+                            if itemLevel and itemLevel < ilvlInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -751,7 +755,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == ">" then
-                            if itemLevel > ilvlInteger then
+                            if itemLevel and itemLevel > ilvlInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -764,7 +768,7 @@ function TestItemAgainstRulesets(link, testing)
                         local levelInteger = tonumber(currentParameter)
                         
                         if operator == "=" then
-                            if itemMinLevel == levelInteger then
+                            if itemMinLevel and itemMinLevel == levelInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -773,7 +777,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == "<" then
-                            if itemMinLevel < levelInteger then
+                            if itemMinLevel and itemMinLevel < levelInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
@@ -782,7 +786,7 @@ function TestItemAgainstRulesets(link, testing)
                                 break
                             end
                         elseif operator == ">" then
-                            if itemMinLevel > levelInteger then
+                            if itemMinLevel and itemMinLevel > levelInteger then
                                 if testing then
                                     MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                                 end
