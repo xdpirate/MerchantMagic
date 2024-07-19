@@ -1,4 +1,4 @@
-## Interface: 50400
+## Interface: 40300
 ## Title-enGB: MerchantMagic
 ## Author: xdpirate
 ## Version: 1.3
