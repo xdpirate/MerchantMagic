@@ -1,5 +1,5 @@
 # MerchantMagic
-MerchantMagic is an addon for World of Warcraft, currently only for Mists of Pandaria (5.4.8). 
+MerchantMagic is an addon for World of Warcraft, currently only for Cataclysm (4.3.4) and Mists of Pandaria (5.4.8) original clients. It does NOT work on Classic.
 
 The addon lets you maintain a list of rules of items to always sell to a vendor. It is flexible, and has per-character rulesets.
 
