@@ -91,7 +91,7 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
     elseif starts_with(message, "add ") then
         local newRuleset = string.sub(message, 5)
         local validationResult = ValidateRuleset(newRuleset)
-        
+
         if validationResult == "Success" then
             MMPrint("Ruleset (" .. newRuleset .. ") seems to be valid!")
             table.insert(MMRules, "0*" .. newRuleset)
@@ -286,7 +286,7 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
             end
         elseif starts_with(command, "remove ") then
             local item = trim(strlower(string.sub(command, 8)))
-            
+        
             if(item == nil or item == "") then
                 MMPrint("Please specify a valid item name or item link")
                 MMPrint("For example: "..MerchantMagic_Highlight("/mm remove latro's dancing blade"))
@@ -364,11 +364,11 @@ function MMItemInfo(link)
     table.insert(returnedLines, "rarity="..itemQuality)
     table.insert(returnedLines, "type="..strlower(itemType))
     table.insert(returnedLines, "subtype="..strlower(itemSubType))
-    
+
     -- Check for custom subtypes
     tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
     tooltipScanner:SetHyperlink(link)
-    
+
     if tooltipScanner:NumLines() > 0 then
         local textLine = _G[tooltipScanner:GetName() .. 'TextLeft2']:GetText()
         tooltipScanner:Hide()
@@ -377,18 +377,18 @@ function MMItemInfo(link)
             table.insert(returnedLines, "subtype=alcohol")
         end
     end
-    
+
     table.insert(returnedLines, "ilvl="..strlower(itemLevel))
     table.insert(returnedLines, "level="..strlower(itemMinLevel))
     table.insert(returnedLines, "sellprice="..strlower(sellPrice))
-    
+
     local isBOE = link_FindSearchInTooltip(link, ITEM_BIND_ON_EQUIP)
     local isBOP = link_FindSearchInTooltip(link, ITEM_BIND_ON_PICKUP)
     local isBOU = link_FindSearchInTooltip(link, ITEM_BIND_ON_USE)
     local isBQ = link_FindSearchInTooltip(link, ITEM_BIND_QUEST)
     local isBTA = link_FindSearchInTooltip(link, ITEM_BIND_TO_ACCOUNT)            
     local isBound = link_FindSearchInTooltip(link, ITEM_SOULBOUND)
-    
+
     if isBOE == false and isBOP == false and isBOU == false and isBQ == false and isBTA == false and isBound == false then
         table.insert(returnedLines, "bindtype=none")
     elseif isBOP or isBound then
@@ -490,7 +490,7 @@ function ValidateRuleset(ruleset)
                 end
             end
         end
-        
+    
     end
     
     return "Success"
@@ -500,7 +500,7 @@ function MM_OnEvent(self, event, ...) -- Event handler
     local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
     if event=="ADDON_LOADED" then
         if arg1=="MerchantMagic" then
-            
+        
             -- Set default settings
             if MMSettings == nil then
                 MMSettings = {enabled = true, verbose = true, max12 = false}
@@ -529,7 +529,7 @@ function MM_OnEvent(self, event, ...) -- Event handler
                     MMSettings.tooltipInfo = false
                 end
             end
-            
+
             if MMRules == nil then
                 MMRules = {"0*rarity=0"} -- Start with an example ruleset, sell all grays
             end
@@ -612,7 +612,7 @@ function DoTheMagic(testing)
                     itemName = strlower(itemName)
                     
                     local sellprice = select(11, GetItemInfo(link))
-                    
+
                     local _, itemCount = GetContainerItemInfo(bag, slot)
                     local slotValue = sellprice * itemCount
                     
@@ -630,7 +630,7 @@ function DoTheMagic(testing)
                                 soldSlots = soldSlots + 1
                                 soldItems = soldItems + itemCount
                                 soldValue = soldValue + slotValue
-                                
+      
                                 if MMSettings.verbose then
                                     MMPrint("Sold: " .. itemCount .. "x ".. link .. " (RS#" .. rulesetIndex .. ")")
                                 end
