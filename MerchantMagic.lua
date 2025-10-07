@@ -1,4 +1,4 @@
-﻿-- MerchantMagic v1.3
+﻿-- MerchantMagic v1.4
 -- By xdpirate
 
 local MerchantMagic_color = "|cFF3FC7EB"
@@ -16,16 +16,16 @@ local whitelistClearConfirmation = false
 local tooltipScanner = _G['LibItemSearchTooltipScanner'] or CreateFrame('GameTooltip', 'LibItemSearchTooltipScanner', UIParent, 'GameTooltipTemplate')
 
 function MM_OnLoad()
-	SLASH_MERCHANTMAGIC1, SLASH_MERCHANTMAGIC2 = '/merchantmagic', '/mm'
-	MMPrint("Loaded! Use /mm or /merchantmagic")
-	
-	MerchantMagicFrame:RegisterEvent("ADDON_LOADED")
-	MerchantMagicFrame:RegisterEvent("MERCHANT_SHOW")
+    SLASH_MERCHANTMAGIC1, SLASH_MERCHANTMAGIC2 = '/merchantmagic', '/mm'
+    MMPrint("Loaded! Use /mm or /merchantmagic")
+    
+    MerchantMagicFrame:RegisterEvent("ADDON_LOADED")
+    MerchantMagicFrame:RegisterEvent("MERCHANT_SHOW")
 end
 
 function SlashCmdList.MERCHANTMAGIC(msg, editbox)
-	local message = strlower(trim(msg))
-	
+    local message = strlower(trim(msg))
+    
     if message == "toggle" then
         MMSettings.enabled = not MMSettings.enabled
         
@@ -91,7 +91,7 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
     elseif starts_with(message, "add ") then
         local newRuleset = string.sub(message, 5)
         local validationResult = ValidateRuleset(newRuleset)
-                
+        
         if validationResult == "Success" then
             MMPrint("Ruleset (" .. newRuleset .. ") seems to be valid!")
             table.insert(MMRules, "0*" .. newRuleset)
@@ -118,11 +118,29 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
         else
             MMPrint("Ruleset must be a number.")
         end
+    elseif starts_with(message, "clone ") then
+        local rulesetToClone = strmatch(message, "clone (%d+)")
+        rulesetToClone = tonumber(rulesetToClone)
+
+        if MMRules[rulesetToClone] then
+            table.insert(MMRules, "0*" .. string.sub(MMRules[rulesetToClone], 3))
+            MMPrint("Cloned ruleset #" .. rulesetToClone .. " to new ruleset #".. table_length(MMRules) .. "! To enable it, enter "..MerchantMagic_Highlight("/mm enable " .. table_length(MMRules)))
+        else
+            MMPrint("Ruleset " .. rulesetToClone .. " doesn't exist!")
+        end
     elseif starts_with(message, "edit ") then
-        local rulesetToEdit, newRuleset = strmatch(message, "edit (%d+) (.+)")
+        local rulesetToEdit = strmatch(message, "edit (%d+)")
+        local newRuleset = strmatch(message, "edit %d+ (.+)")
         rulesetToEdit = tonumber(rulesetToEdit)
         
-        if rulesetToEdit ~= nil and newRuleset ~= nil then
+        if rulesetToEdit ~= nil and newRuleset == nil then
+            -- If commandline is just "/mm edit xx" then insert text from the given ruleset, for ease of editing
+            if MMRules[rulesetToEdit] then
+                DelayedChatInsert("/mm edit " .. rulesetToEdit .. " " .. string.sub(MMRules[rulesetToEdit], 3))
+            else
+                MMPrint("Ruleset " .. rulesetToEdit .. " doesn't exist!")
+            end
+        elseif rulesetToEdit ~= nil and newRuleset ~= nil then
             if(rulesetToEdit < 1 or rulesetToEdit > table_length(MMRules)) then
                 MMPrint("Invalid ruleset ID. There are currently " .. table_length(MMRules) .. " rulesets registered.")
             else
@@ -140,8 +158,8 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
         else
             if rulesetToEdit == nil then
                 MMPrint("Ruleset must be a number.")
-            elseif newRuleset ~= nil then
-                MMPrint("You must specify a new ruleset.")
+            elseif newRuleset == nil then
+                MMPrint("You must specify a ruleset.")
             end
         end
     elseif starts_with(message, "enable ") then
@@ -268,7 +286,7 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
             end
         elseif starts_with(command, "remove ") then
             local item = trim(strlower(string.sub(command, 8)))
-		
+            
             if(item == nil or item == "") then
                 MMPrint("Please specify a valid item name or item link")
                 MMPrint("For example: "..MerchantMagic_Highlight("/mm remove latro's dancing blade"))
@@ -324,6 +342,20 @@ function SlashCmdList.MERCHANTMAGIC(msg, editbox)
     end
 end
 
+function DelayedChatInsert(text)
+    local f = CreateFrame("Frame")
+    f.elapsed = 0
+    f:SetScript("OnUpdate", function(self, elapsed)
+        self.elapsed = self.elapsed + elapsed
+        if self.elapsed > 0.01 then
+            ChatFrame_OpenChat(text or "")
+            self:SetScript("OnUpdate", nil)
+            self:Hide()
+        end 
+    end)
+    f:Show()
+end
+
 function MMItemInfo(link)
     local itemName, link, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, _, _, _, sellPrice = GetItemInfo(link)
     
@@ -332,11 +364,11 @@ function MMItemInfo(link)
     table.insert(returnedLines, "rarity="..itemQuality)
     table.insert(returnedLines, "type="..strlower(itemType))
     table.insert(returnedLines, "subtype="..strlower(itemSubType))
-
+    
     -- Check for custom subtypes
     tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
     tooltipScanner:SetHyperlink(link)
-
+    
     if tooltipScanner:NumLines() > 0 then
         local textLine = _G[tooltipScanner:GetName() .. 'TextLeft2']:GetText()
         tooltipScanner:Hide()
@@ -345,18 +377,18 @@ function MMItemInfo(link)
             table.insert(returnedLines, "subtype=alcohol")
         end
     end
-
+    
     table.insert(returnedLines, "ilvl="..strlower(itemLevel))
     table.insert(returnedLines, "level="..strlower(itemMinLevel))
     table.insert(returnedLines, "sellprice="..strlower(sellPrice))
-
+    
     local isBOE = link_FindSearchInTooltip(link, ITEM_BIND_ON_EQUIP)
     local isBOP = link_FindSearchInTooltip(link, ITEM_BIND_ON_PICKUP)
     local isBOU = link_FindSearchInTooltip(link, ITEM_BIND_ON_USE)
     local isBQ = link_FindSearchInTooltip(link, ITEM_BIND_QUEST)
     local isBTA = link_FindSearchInTooltip(link, ITEM_BIND_TO_ACCOUNT)            
     local isBound = link_FindSearchInTooltip(link, ITEM_SOULBOUND)
-
+    
     if isBOE == false and isBOP == false and isBOU == false and isBQ == false and isBTA == false and isBound == false then
         table.insert(returnedLines, "bindtype=none")
     elseif isBOP or isBound then
@@ -458,17 +490,17 @@ function ValidateRuleset(ruleset)
                 end
             end
         end
-    
+        
     end
     
     return "Success"
 end
 
 function MM_OnEvent(self, event, ...) -- Event handler
-	local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
-	if event=="ADDON_LOADED" then
-		if arg1=="MerchantMagic" then
-        
+    local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11 = ...;
+    if event=="ADDON_LOADED" then
+        if arg1=="MerchantMagic" then
+            
             -- Set default settings
             if MMSettings == nil then
                 MMSettings = {enabled = true, verbose = true, max12 = false}
@@ -546,8 +578,8 @@ function MM_OnEvent(self, event, ...) -- Event handler
                 end
             end)
         end
-	elseif event == "MERCHANT_SHOW" then
-		-- Parse rules and sell shit!
+    elseif event == "MERCHANT_SHOW" then
+        -- Parse rules and sell shit!
         
         if MMSettings.enabled then
             DoTheMagic(false)
@@ -580,7 +612,7 @@ function DoTheMagic(testing)
                     itemName = strlower(itemName)
                     
                     local sellprice = select(11, GetItemInfo(link))
-                                
+                    
                     local _, itemCount = GetContainerItemInfo(bag, slot)
                     local slotValue = sellprice * itemCount
                     
@@ -598,7 +630,7 @@ function DoTheMagic(testing)
                                 soldSlots = soldSlots + 1
                                 soldItems = soldItems + itemCount
                                 soldValue = soldValue + slotValue
-                            
+                                
                                 if MMSettings.verbose then
                                     MMPrint("Sold: " .. itemCount .. "x ".. link .. " (RS#" .. rulesetIndex .. ")")
                                 end
@@ -702,7 +734,7 @@ function TestItemAgainstRulesets(link, testing)
                             if testing then
                                 MMPrint(link .. " matched "..argument..operator..currentParameter.." in ruleset #"..rulesetIndex..".")
                             end
-                                
+                            
                             matchedRules = matchedRules + 1
                             break
                         end
@@ -878,7 +910,7 @@ function TestItemAgainstRulesets(link, testing)
                 if testing then
                     MMPrint(link .. " matched all rules in ruleset #"..rulesetIndex..".")
                 end
-                                
+                
                 return true, rulesetIndex
             else
                 if testing then
@@ -892,27 +924,29 @@ function TestItemAgainstRulesets(link, testing)
 end
 
 function ShowMMUsage() -- Show available functions
-	MMPrint("Usage: "..MerchantMagic_color.."/mm "..MerchantMagic_Highlight("<command>"))
-	MMPrint("(/merchantmagic can be substituted for /mm)")
+    MMPrint("Usage: "..MerchantMagic_color.."/mm "..MerchantMagic_Highlight("<command>"))
+    MMPrint("(/merchantmagic can be substituted for /mm)")
     MMPrint("+ Addon settings:")
-	MMPrint(MerchantMagic_Highlight("toggle").." -- Turn MerchantMagic on/off (currently " .. (MMSettings.enabled and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
-	MMPrint(MerchantMagic_Highlight("verbose").." -- Turn verbose mode on/off (currently " .. (MMSettings.verbose and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
-	MMPrint(MerchantMagic_Highlight("max12").." -- Turn Max12 mode on/off (currently " .. (MMSettings.max12 and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
-	MMPrint(MerchantMagic_Highlight("tooltip").." -- Turn MM tooltip info on/off (currently " .. (MMSettings.tooltipEnabled and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
-	MMPrint(MerchantMagic_Highlight("tooltip verbose").." -- Show ruleset content in item tooltip info (currently " .. (MMSettings.tooltipVerbose and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
-	MMPrint(MerchantMagic_Highlight("tooltip info").." -- Show item info in MM tooltip (currently " .. (MMSettings.tooltipInfo and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("toggle").." -- Turn MerchantMagic on/off (currently " .. (MMSettings.enabled and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("verbose").." -- Turn verbose mode on/off (currently " .. (MMSettings.verbose and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("max12").." -- Turn Max12 mode on/off (currently " .. (MMSettings.max12 and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("tooltip").." -- Turn MM tooltip info on/off (currently " .. (MMSettings.tooltipEnabled and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("tooltip verbose").." -- Show ruleset content in item tooltip info (currently " .. (MMSettings.tooltipVerbose and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
+    MMPrint(MerchantMagic_Highlight("tooltip info").." -- Show item info in MM tooltip (currently " .. (MMSettings.tooltipInfo and "|cFF00FF00ON|r" or "|cFFFF0000OFF|r") .. ")")
     MMPrint("+ Ruleset settings:")
-	MMPrint(MerchantMagic_Highlight("add <ruleset>").." -- Add a new ruleset")
-	MMPrint(MerchantMagic_Highlight("remove <rulesetID>").." -- Remove ruleset <ruleID>")
-	MMPrint(MerchantMagic_Highlight("edit <rulesetID> <newRuleset>").." -- Edit ruleset <ruleID>, replacing it with <newRuleset>")
-	MMPrint(MerchantMagic_Highlight("enable <rulesetID>").." -- Enable ruleset <rulesetID>")
-	MMPrint(MerchantMagic_Highlight("disable <rulesetID>").." -- Disable ruleset <rulesetID>")
-	MMPrint(MerchantMagic_Highlight("move <fromID> <toID>").." -- Move ruleset from <fromID> to <toID>")
-	MMPrint(MerchantMagic_Highlight("swap <fromID> <toID>").." -- Swap <fromID> <toID> ruleset positions")
-	MMPrint(MerchantMagic_Highlight("test <itemLink>").." -- Test <itemLink> against current rulesets")
-	MMPrint(MerchantMagic_Highlight("testbags").." -- Test contents of bags against current rulesets (dry run)")
-	MMPrint(MerchantMagic_Highlight("info <itemLink>").." -- Show relevant info about <itemLink>")
-	MMPrint(MerchantMagic_Highlight("whitelist").." -- Show whitelist commands")
+    MMPrint(MerchantMagic_Highlight("add <ruleset>").." -- Add a new ruleset")
+    MMPrint(MerchantMagic_Highlight("remove <rulesetID>").." -- Remove ruleset <rulesetID>")
+    MMPrint(MerchantMagic_Highlight("edit <rulesetID>").." -- Edit ruleset <rulesetID> in-place")
+    MMPrint(MerchantMagic_Highlight("edit <rulesetID> <newRuleset>").." -- Edit ruleset <rulesetID>, replacing it with <newRuleset>")
+    MMPrint(MerchantMagic_Highlight("enable <rulesetID>").." -- Enable ruleset <rulesetID>")
+    MMPrint(MerchantMagic_Highlight("disable <rulesetID>").." -- Disable ruleset <rulesetID>")
+    MMPrint(MerchantMagic_Highlight("move <fromID> <toID>").." -- Move ruleset from <fromID> to <toID>, reordering the list")
+    MMPrint(MerchantMagic_Highlight("swap <fromID> <toID>").." -- Swap <fromID> <toID> ruleset positions")
+    MMPrint(MerchantMagic_Highlight("clone <rulesetID>").." -- Clone <rulesetID> into a new entry")
+    MMPrint(MerchantMagic_Highlight("test <itemLink>").." -- Test <itemLink> against current rulesets")
+    MMPrint(MerchantMagic_Highlight("testbags").." -- Test contents of bags against current rulesets (dry run)")
+    MMPrint(MerchantMagic_Highlight("info <itemLink>").." -- Show relevant info about <itemLink>")
+    MMPrint(MerchantMagic_Highlight("whitelist").." -- Show whitelist commands")
     MMPrint(MerchantMagic_Highlight("clear").." -- Clear all rulesets")
     MMPrint(MerchantMagic_Highlight("rulesethelp").." -- Show help on how to write a ruleset")
 end
@@ -927,30 +961,31 @@ function ShowRulesetUsage()
     MMPrint("A comma (,) separates boolean OR parameters within each rule.")
     MMPrint(MerchantMagic_Highlight("Example: ") .. "type=weapon,armor  - Matches both weapons and armor")
     MMPrint("When a merchant window is opened, MerchantMagic starts checking inventory contents against user's defined rules. Rules are processed top-down, in decreasing priority. If an item matches, it will be sold, and processing will move to the next bag slot without parsing lower priority rules.")
+    MMPrint("For a full explanation of all possible options, visit https://github.com/xdpirate/MerchantMagic")
 end
 
 function ShowWhitelistUsage()
     MMPrint("Usage: "..MerchantMagic_color.."/mm whitelist "..MerchantMagic_Highlight("<command>"))
-	MMPrint("(/merchantmagic can be substituted for /mm)")
+    MMPrint("(/merchantmagic can be substituted for /mm)")
     MMPrint("===================")
     MMPrint("The whitelist is a list of items that will never be automatically sold.")
     MMPrint("Add an item by name or link to ensure that it is never sold by mistake!")
     MMPrint("Available whitelist commands:")
     MMPrint("===================")
-	MMPrint(MerchantMagic_Highlight("add <item name or link>").." -- Add an item to the whitelist")
-	MMPrint(MerchantMagic_Highlight("remove <item name or link>").." -- Remove specified item from whitelist")
-	MMPrint(MerchantMagic_Highlight("list").." -- List all items currently in the whitelist")
+    MMPrint(MerchantMagic_Highlight("add <item name or link>").." -- Add an item to the whitelist")
+    MMPrint(MerchantMagic_Highlight("remove <item name or link>").." -- Remove specified item from whitelist")
+    MMPrint(MerchantMagic_Highlight("list").." -- List all items currently in the whitelist")
     MMPrint(MerchantMagic_Highlight("clear").." -- Clear the whitelist of all item names")
 end
 
 function MMPrint(msg) -- Print a chat frame message in MerchantMagic format
-	print(MerchantMagic_color.."MerchantMagic"..original..": "..msg)
+    print(MerchantMagic_color.."MerchantMagic"..original..": "..msg)
 end
 
 function MerchantMagic_Highlight(msg) -- Highlight a piece of text
-	if msg ~= nil then
-		return MerchantMagic_HighLightColor..msg..original
-	end
+    if msg ~= nil then
+        return MerchantMagic_HighLightColor..msg..original
+    end
 end
 
 function string_split(inputString, separator)
@@ -962,7 +997,7 @@ function string_split(inputString, separator)
 end
 
 function starts_with(str, start)
-   return str:sub(1, #start) == start
+    return str:sub(1, #start) == start
 end
 
 function has_value (tab, val) -- Shamelessly stolen from Stack Overflow
@@ -971,26 +1006,26 @@ function has_value (tab, val) -- Shamelessly stolen from Stack Overflow
             return true
         end
     end
-
+    
     return false
 end
 
 function table_index(whichTable, whichValue)
-	local index={}
-	for k,v in pairs(whichTable) do
-	   index[v]=k
-	end
-	return index[whichValue]
+    local index={}
+    for k,v in pairs(whichTable) do
+        index[v]=k
+    end
+    return index[whichValue]
 end
 
 function table_length(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
+    local count = 0
+    for _ in pairs(T) do count = count + 1 end
+    return count
 end
 
 function trim(s)
-   return (s:gsub("^%s*(.-)%s*$", "%1"))
+    return (s:gsub("^%s*(.-)%s*$", "%1"))
 end
 
 -- The following code to detect bind type is borrowed (and slightly modified) from tekkub's wonderful GnomishVendorShrinker. 
@@ -998,16 +1033,16 @@ end
 -- https://github.com/TekNoLogic/GnomishVendorShrinker
 
 function link_FindSearchInTooltip(itemLink, search)
-	tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
-	tooltipScanner:SetHyperlink(itemLink)
-
-	local result = false
-	if tooltipScanner:NumLines() > 1 and _G[tooltipScanner:GetName() .. 'TextLeft2']:GetText() == search then
-		result = true
-	elseif tooltipScanner:NumLines() > 2 and _G[tooltipScanner:GetName() .. 'TextLeft3']:GetText() == search then
-		result = true
-	end
-	tooltipScanner:Hide()
-
-	return result
+    tooltipScanner:SetOwner(UIParent, 'ANCHOR_NONE')
+    tooltipScanner:SetHyperlink(itemLink)
+    
+    local result = false
+    if tooltipScanner:NumLines() > 1 and _G[tooltipScanner:GetName() .. 'TextLeft2']:GetText() == search then
+        result = true
+    elseif tooltipScanner:NumLines() > 2 and _G[tooltipScanner:GetName() .. 'TextLeft3']:GetText() == search then
+        result = true
+    end
+    tooltipScanner:Hide()
+    
+    return result
 end
